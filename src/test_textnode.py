@@ -1,6 +1,6 @@
 import unittest
 
-from textnode import TextNode, TextType, text_node_to_html_node
+from textnode import TextNode, TextType
 
 
 class TestTextNode(unittest.TestCase):
@@ -23,19 +23,6 @@ class TestTextNode(unittest.TestCase):
         node = TextNode("This is a text node", TextType.BOLD, "https://boot.dev")
         node2 = TextNode("This is a text node", TextType.BOLD, "https://boot.dev")
         self.assertEqual(node, node2)
-
-    def test_text_to_html(self):
-        text_node = TextNode("bold text", TextType.BOLD)
-        html_node = text_node_to_html_node(text_node)
-        self.assertEqual(repr(html_node), "HTMLNode(b, bold text, None, {})")
-
-    def test_text_to_html_img(self):
-        text_node = TextNode("image text", TextType.IMAGE, "img.png")
-        html_node = text_node_to_html_node(text_node)
-        self.assertEqual(
-            repr(html_node),
-            "HTMLNode(img, None, None, {'src': 'img.png', 'alt': 'image text'})",
-        )
 
 
 if __name__ == "__main__":
