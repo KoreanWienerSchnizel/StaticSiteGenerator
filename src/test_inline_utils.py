@@ -1,5 +1,6 @@
 import unittest
 
+from htmlnode import LeafNode
 from inline_utils import (
     extract_markdown_links,
     extract_markdown_images,
@@ -8,6 +9,7 @@ from inline_utils import (
     split_nodes_image,
     split_nodes_link,
     text_node_to_html_node,
+    text_to_children,
     text_to_textnodes,
 )
 from textnode import TextNode, TextType
@@ -212,6 +214,29 @@ class TestMarkdownUtils(unittest.TestCase):
                 ),
                 TextNode(" and a ", TextType.TEXT),
                 TextNode("link", TextType.LINK, "https://boot.dev"),
+            ],
+        )
+
+    def test_text_to_children(self):
+        text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        nodes = text_to_children(text)
+        self.assertEqual(
+            nodes,
+            [
+                LeafNode(None, "This is "),
+                LeafNode("b", "text"),
+                LeafNode(None, " with an "),
+                LeafNode("i", "italic"),
+                LeafNode(None, " word and a "),
+                LeafNode("code", "code block"),
+                LeafNode(None, " and an "),
+                LeafNode(
+                    "img",
+                    None,
+                    {"src": "https://i.imgur.com/fJRm4Vk.jpeg", "alt": "obi wan image"},
+                ),
+                LeafNode(None, " and a "),
+                LeafNode("a", "link", {"href": "https://boot.dev"}),
             ],
         )
 

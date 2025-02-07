@@ -4,24 +4,6 @@ from htmlnode import LeafNode
 from textnode import TextNode, TextType
 
 
-def text_node_to_html_node(text_node):
-    match text_node.text_type:
-        case TextType.TEXT:
-            return LeafNode(None, text_node.text)
-        case TextType.BOLD:
-            return LeafNode("b", text_node.text)
-        case TextType.ITALIC:
-            return LeafNode("i", text_node.text)
-        case TextType.CODE:
-            return LeafNode("code", text_node.text)
-        case TextType.LINK:
-            return LeafNode("a", text_node.text, {"href": text_node.url})
-        case TextType.IMAGE:
-            return LeafNode("img", None, {"src": text_node.url, "alt": text_node.text})
-        case _:
-            raise ValueError("TextNode Error: unknown TextType")
-
-
 def extract_markdown_images(text):
     return re.findall(r"!\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
 
@@ -107,6 +89,24 @@ def split_nodes_link(old_nodes):
     return node_list
 
 
+def text_node_to_html_node(text_node):
+    match text_node.text_type:
+        case TextType.TEXT:
+            return LeafNode(None, text_node.text)
+        case TextType.BOLD:
+            return LeafNode("b", text_node.text)
+        case TextType.ITALIC:
+            return LeafNode("i", text_node.text)
+        case TextType.CODE:
+            return LeafNode("code", text_node.text)
+        case TextType.LINK:
+            return LeafNode("a", text_node.text, {"href": text_node.url})
+        case TextType.IMAGE:
+            return LeafNode("img", None, {"src": text_node.url, "alt": text_node.text})
+        case _:
+            raise ValueError("TextNode Error: unknown TextType")
+
+
 def text_to_textnodes(text):
     nodes = [TextNode(text, TextType.TEXT)]
     nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
@@ -115,3 +115,8 @@ def text_to_textnodes(text):
     nodes = split_nodes_image(nodes)
     nodes = split_nodes_link(nodes)
     return nodes
+
+
+def text_to_children(text):
+    nodes = text_to_textnodes(text)
+    return list(map(text_node_to_html_node, nodes))
