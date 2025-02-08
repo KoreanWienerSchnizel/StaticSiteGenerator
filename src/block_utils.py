@@ -70,23 +70,25 @@ def markdown_to_html_node(markdown):
         type = block_to_block_type(block)
         match type:
             case BlockType.PARAGRAPH:
-                text = block
+                text = block.strip()
                 children = text_to_children(text)
                 block_nodes.append(ParentNode("p", children))
 
             case BlockType.HEADING:
                 heading_value = block.find(" ")
-                text = block[heading_value + 1 :]
+                text = block[heading_value:]
+                text = text.strip()
                 children = text_to_children(text)
                 block_nodes.append(ParentNode(f"h{heading_value}", children))
 
             case BlockType.CODEBLOCK:
-                text = block.strip("```")
+                text = block[4:-3]
                 code_node = LeafNode("code", text)
-                block_nodes.append(ParentNode("pre", code_node))
+                block_nodes.append(ParentNode("pre", [code_node]))
 
             case BlockType.QUOTE:
                 text = block[1:].replace("\n>", "\n")
+                text = text.strip()
                 children = text_to_children(text)
                 block_nodes.append(ParentNode("blockquote", children))
 
@@ -94,7 +96,7 @@ def markdown_to_html_node(markdown):
                 lines = block.splitlines()
                 list_items = []
                 for line in lines:
-                    text = line[2:]
+                    text = line[2:].strip()
                     children = text_to_children(text)
                     list_items.append(ParentNode("li", children))
                 block_nodes.append(ParentNode("ul", list_items))
@@ -103,7 +105,7 @@ def markdown_to_html_node(markdown):
                 lines = block.splitlines()
                 list_items = []
                 for line in lines:
-                    text = line[3:]
+                    text = line[3:].strip()
                     children = text_to_children(text)
                     list_items.append(ParentNode("li", children))
                 block_nodes.append(ParentNode("ul", list_items))
@@ -112,3 +114,11 @@ def markdown_to_html_node(markdown):
                 raise Exception("No BlockType")
 
     return ParentNode("div", block_nodes)
+
+
+def extract_title(markdown):
+    lines = markdown.split("\n")
+    for line in lines:
+        if line.startswith("# "):
+            return line[2:].strip()
+    raise Exception("no title extracted")

@@ -3,6 +3,7 @@ import unittest
 from block_utils import (
     BlockType,
     block_to_block_type,
+    extract_title,
     markdown_to_blocks,
     markdown_to_html_node,
 )
@@ -85,6 +86,17 @@ paragraph
             node.to_html(),
             '<div><h1>heading</h1><p>paragraph</p><ul><li>list</li><li><a href="url.com">link</a></li></ul><p><b>bold</b> paragraph</p></div>',
         )
+
+    def test_extract_title(self):
+        text = """# title
+
+paragraph
+
+* stuff
+* stuff2
+"""
+        title = extract_title(text)
+        self.assertEqual(title, "title")
 
 
 if __name__ == "__main__":
